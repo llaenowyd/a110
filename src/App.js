@@ -72,13 +72,14 @@ const App = () => {
 
   const classes = useStyles()
 
-  const breakpointName = isXS ? 'xs' : isSM ? 'sm' : isMD ? 'md' : isLG ? 'lg' : 'xl'
+  const breakpointName = isXS ? 'xs' : isSM ? 'sm' : isMD ? 'md' : isLG ? 'lg' : isXL ? 'xl' : '?'
   const breakpointDescription = {
     xs: 'extra-small',
     sm: 'small',
     md: 'medium',
     lg: 'large',
-    xl: 'extra-large'
+    xl: 'extra-large',
+    '?': '???',
   }[breakpointName]
 
   return (
