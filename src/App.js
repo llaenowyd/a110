@@ -25,7 +25,6 @@ const useStyles = makeStyles({
   },
   bottomRow: {
     marginTop: 'auto',
-    userSelect: 'none',
   },
   fauxContent: {
     backgroundColor: 'lightcoral',
