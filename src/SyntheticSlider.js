@@ -4,6 +4,11 @@ import Swipe from 'react-easy-swipe'
 import {makeStyles} from '@material-ui/core'
 
 const useStyles = makeStyles({
+  diag: {
+    color: 'darkblue',
+    height: '2em',
+    width: '100%',
+  },
   slidden: {
     alignItems: 'center',
     backgroundColor: 'darkolivegreen',
@@ -17,6 +22,12 @@ const useStyles = makeStyles({
   },
   syntheticSlider: {
     backgroundColor: 'tan',
+    display: 'flex',
+    flexDirection: 'column',
+    overflowX: 'hidden',
+    width: '100%',
+  },
+  syntheticSliderRow: {
     display: 'flex',
     flexDirection: 'row',
     overflowX: 'hidden',
@@ -35,37 +46,45 @@ const Slidden = ({n}) => {
 const SyntheticSlider = () => {
   const classes = useStyles()
 
+  const [diag, setDiag] = React.useState('')
+
   const onSwipeStart = () => {
     console.log('onSwipeStart')
+    setDiag('onSwipeStart')
   }
 
   const onSwipeMove = () => {
     console.log('onSwipeMove')
+    setDiag('onSwipeMove')
   }
 
   const onSwipeEnd = () => {
     console.log('onSwipeEnd')
+    setDiag('onSwipeEnd')
   }
 
   return (
-    <Swipe
-      onSwipeStart={onSwipeStart}
-      onSwipeMove={onSwipeMove}
-      onSwipeEnd={onSwipeEnd}>
-      <div className={classes.syntheticSlider}>
-        {
-          (
-            () => {
-              const result = []
-              for (let i = 0; i < 100; i++) {
-                result.push(<Slidden n={i} />)
+    <div className={classes.syntheticSlider}>
+      <div className={classes.diag}>{diag}</div>
+      <Swipe
+        onSwipeStart={onSwipeStart}
+        onSwipeMove={onSwipeMove}
+        onSwipeEnd={onSwipeEnd}>
+        <div className={classes.syntheticSliderRow}>
+          {
+            (
+              () => {
+                const result = []
+                for (let i = 0; i < 100; i++) {
+                  result.push(<Slidden n={i} />)
+                }
+                return result
               }
-              return result
-            }
-          )()
-        }
-      </div>
-    </Swipe>
+            )()
+          }
+        </div>
+      </Swipe>
+    </div>
   )
 }
 
