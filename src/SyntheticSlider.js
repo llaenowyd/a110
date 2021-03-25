@@ -9,16 +9,21 @@ const useStyles = makeStyles({
     height: '2em',
     width: '100%',
   },
-  slidden: {
+  slidden: ({widthPerTile}) => ({
+    height: '100%',
+    maxWidth: `${widthPerTile}px`,
+    padding: '0.5em',
+    width: `${widthPerTile}px`,
+  }),
+  sliddenContent: {
     alignItems: 'center',
     backgroundColor: 'darkolivegreen',
-    display: 'flex',
     color: 'tan',
-    height: '100%',
+    display: 'flex',
+    flex: 1,
     justifyContent: 'center',
-    margin: '0 1em',
-    padding: '1em',
-    width: '10%',
+    width: '100%',
+    height: '100%',
   },
   syntheticSlider: {
     backgroundColor: 'tan',
@@ -36,52 +41,69 @@ const useStyles = makeStyles({
   },
 })
 
-const Slidden = ({n}) => {
-  const classes = useStyles()
-
+const Slidden = ({classes, n}) => {
   return (
-    <div className={classes.slidden} key={n}>{`${n}`}</div>
+    <div className={classes.slidden}>
+      <div className={classes.sliddenContent}>
+        {`${n}`}
+      </div>
+    </div>
   )
 }
 
-const SyntheticSlider = () => {
-  const classes = useStyles()
+const SyntheticSlider = ({numElements, pageSize, viewportWidth}) => {
+  const widthPerTile = viewportWidth / pageSize
+  const classes = useStyles({widthPerTile})
 
   const [diag, setDiag] = React.useState('')
-  const [swipedOffset, setSwipedOffset] = React.useState(0)
+  const [swipedPercent, setSwipedPercent] = React.useState(0)
+
+  // edge case, pageSize >= numElements
+  const contentPerScreen = pageSize / numElements
+  const percentContentPerScreen = 100 * contentPerScreen
+
+  console.log({
+    viewportWidth,
+    widthPerTile,
+    contentPerScreen,
+    percentContentPerScreen,
+  })
 
   const onSwipeStart = () => {
-    console.log('onSwipeStart')
-    setDiag(`onSwipeStart ${swipedOffset}`)
+    setDiag(`onSwipeStart ${swipedPercent}`)
   }
 
   const onSwipeMove = position => {
-    console.log('onSwipeMove')
-    setDiag(`onSwipeMove ${swipedOffset} + ${position.x}`)
-    const nextSwipedOffset = swipedOffset - position.x
-    setSwipedOffset(nextSwipedOffset > 0 ? 0 : nextSwipedOffset)
+    const screenPerSwipe = position.x / viewportWidth
+    const contentPerSwipe = screenPerSwipe * contentPerScreen
+    const percentContentSwiped = contentPerSwipe * 100
+    const nextSwipedPercent = swipedPercent + percentContentSwiped
+
+    const clampedNextSwipedPercent = Math.max(-100 + percentContentPerScreen, Math.min(0, nextSwipedPercent))
+
+    console.log({
+      posX: position.x,
+      screenPerSwipe,
+      contentPerSwipe,
+      percentContentSwiped,
+      nextSwipedPercent,
+      clampedNextSwipedPercent,
+    })
+
+    setDiag(`onSwipeMove ${clampedNextSwipedPercent}`)
+
+    setSwipedPercent(clampedNextSwipedPercent)
   }
 
   const onSwipeEnd = () => {
-    console.log('onSwipeEnd')
-    setDiag(`onSwipeEnd ${swipedOffset}`)
-  }
-
-  const buttonSwipe = op => () => {
-    if (op === '+') {
-      const nextSwipedOffset = swipedOffset + 10
-      setSwipedOffset(nextSwipedOffset > 0 ? 0 : nextSwipedOffset)
-    } else {
-      const nextSwipedOffset = swipedOffset - 10
-      setSwipedOffset(nextSwipedOffset > 0 ? 0 : nextSwipedOffset)
-    }
+    setDiag(`onSwipeEnd ${swipedPercent}`)
   }
 
   const swipeOffsetStyle = React.useMemo(
     () => ({
-      transform: `translateX(${swipedOffset}px)`
+      transform: `translateX(${swipedPercent}%)`
     }),
-    [swipedOffset]
+    [swipedPercent]
   )
 
   return (
@@ -91,15 +113,13 @@ const SyntheticSlider = () => {
         onSwipeStart={onSwipeStart}
         onSwipeMove={onSwipeMove}
         onSwipeEnd={onSwipeEnd}>
-        <input type="button" onClick={buttonSwipe('+')} value="+"/>
-        <input type="button" onClick={buttonSwipe('-')} value="-"/>
         <div className={classes.syntheticSliderRow} style={swipeOffsetStyle}>
           {
             (
               () => {
                 const result = []
-                for (let i = 0; i < 100; i++) {
-                  result.push(<Slidden n={i} />)
+                for (let i = 0; i < numElements; i++) {
+                  result.push(<Slidden classes={classes} key={i} n={i} />)
                 }
                 return result
               }

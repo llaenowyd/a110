@@ -6,6 +6,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { useTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
 
+import useViewportWidth from './useViewportWidth'
 import SyntheticSlider from './SyntheticSlider'
 
 const useStyles = makeStyles({
@@ -49,18 +50,6 @@ const useStyles = makeStyles({
   },
 })
 
-const useWindowSize = () => {
-  const [size, setSize] = React.useState([0, 0]);
-  React.useLayoutEffect(() => {
-    const updateSize = () => setSize([window.innerWidth, window.innerHeight])
-
-    window.addEventListener('resize', updateSize)
-    updateSize()
-    return () => window.removeEventListener('resize', updateSize)
-  }, []);
-  return size
-}
-
 const Row = props => {
   const classes = useStyles()
 
@@ -76,8 +65,6 @@ const App = () => {
   const isLG = useMediaQuery(theme.breakpoints.only('lg'))
   const isXL = useMediaQuery(theme.breakpoints.only('xl'))
 
-  const viewportDimensions = useWindowSize()
-
   const classes = useStyles()
 
   const breakpointName = isXS ? 'xs' : isSM ? 'sm' : isMD ? 'md' : isLG ? 'lg' : isXL ? 'xl' : '?'
@@ -90,6 +77,8 @@ const App = () => {
     '?': '???',
   }[breakpointName]
 
+  const viewportWidth = useViewportWidth()
+
   return (
     <CssBaseline>
       <div className={classes.app}>
@@ -99,10 +88,10 @@ const App = () => {
         <div className={classes.fauxContent}>
           <Row>faux content</Row>
           <Row>{`breakpoint: ${breakpointName} (${breakpointDescription})`}</Row>
-          <Row>{`viewport width: ${viewportDimensions?.[0]}`}</Row>
+          <Row>{`viewport width: ${viewportWidth}`}</Row>
           <Row>{`device pixel ratio: ${window.devicePixelRatio}`}</Row>
           <Row className={classes.bottomRow}>
-            <SyntheticSlider />
+            <SyntheticSlider numElements={100} pageSize={5} viewportWidth={0.83 * viewportWidth} />
           </Row>
         </div>
       </div>
