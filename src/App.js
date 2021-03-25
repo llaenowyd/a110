@@ -91,7 +91,7 @@ const App = () => {
           <Row>{`viewport width: ${viewportWidth}`}</Row>
           <Row>{`device pixel ratio: ${window.devicePixelRatio}`}</Row>
           <Row className={classes.bottomRow}>
-            <SyntheticSlider numElements={100} pageSize={5} viewportWidth={0.83 * viewportWidth} />
+            <SyntheticSlider numElements={37} pageSize={5} viewportWidth={0.83 * viewportWidth} />
           </Row>
         </div>
       </div>

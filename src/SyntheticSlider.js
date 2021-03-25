@@ -55,8 +55,9 @@ const SyntheticSlider = ({numElements, pageSize, viewportWidth}) => {
   const widthPerTile = viewportWidth / pageSize
   const classes = useStyles({widthPerTile})
 
-  const [diag, setDiag] = React.useState('')
+  const [diag, setDiag] = React.useState(0)
   const [swipedPercent, setSwipedPercent] = React.useState(0)
+  const [ephemeralSwipedPercent, setEphemeralSwipedPercent] = React.useState(0)
 
   // edge case, pageSize >= numElements
   const contentPerScreen = pageSize / numElements
@@ -70,7 +71,7 @@ const SyntheticSlider = ({numElements, pageSize, viewportWidth}) => {
   })
 
   const onSwipeStart = () => {
-    setDiag(`onSwipeStart ${swipedPercent}`)
+    setDiag(Math.round(swipedPercent))
   }
 
   const onSwipeMove = position => {
@@ -90,25 +91,27 @@ const SyntheticSlider = ({numElements, pageSize, viewportWidth}) => {
       clampedNextSwipedPercent,
     })
 
-    setDiag(`onSwipeMove ${clampedNextSwipedPercent}`)
+    setDiag(Math.round(clampedNextSwipedPercent))
 
-    setSwipedPercent(clampedNextSwipedPercent)
+    setEphemeralSwipedPercent(clampedNextSwipedPercent)
   }
 
   const onSwipeEnd = () => {
-    setDiag(`onSwipeEnd ${swipedPercent}`)
+    setDiag(Math.round(ephemeralSwipedPercent))
+    setSwipedPercent(ephemeralSwipedPercent)
+    setEphemeralSwipedPercent(0)
   }
 
   const swipeOffsetStyle = React.useMemo(
     () => ({
-      transform: `translateX(${swipedPercent}%)`
+      transform: `translateX(${ephemeralSwipedPercent ? ephemeralSwipedPercent : swipedPercent}%)`
     }),
-    [swipedPercent]
+    [ephemeralSwipedPercent, swipedPercent]
   )
 
   return (
     <div className={classes.syntheticSlider}>
-      <div className={classes.diag}>{diag}</div>
+      <div className={classes.diag}>n={numElements} content offset: {diag}%</div>
       <Swipe
         onSwipeStart={onSwipeStart}
         onSwipeMove={onSwipeMove}
