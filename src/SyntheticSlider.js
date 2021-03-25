@@ -58,7 +58,8 @@ const SyntheticSlider = () => {
   const onSwipeMove = position => {
     console.log('onSwipeMove')
     setDiag(`onSwipeMove ${swipedOffset} + ${position.x}`)
-    setSwipedOffset(position.x + swipedOffset)
+    const nextSwipedOffset = swipedOffset - position.x
+    setSwipedOffset(nextSwipedOffset > 0 ? 0 : nextSwipedOffset)
   }
 
   const onSwipeEnd = () => {
@@ -66,9 +67,19 @@ const SyntheticSlider = () => {
     setDiag(`onSwipeEnd ${swipedOffset}`)
   }
 
+  const buttonSwipe = op => () => {
+    if (op === '+') {
+      const nextSwipedOffset = swipedOffset + 10
+      setSwipedOffset(nextSwipedOffset > 0 ? 0 : nextSwipedOffset)
+    } else {
+      const nextSwipedOffset = swipedOffset - 10
+      setSwipedOffset(nextSwipedOffset > 0 ? 0 : nextSwipedOffset)
+    }
+  }
+
   const swipeOffsetStyle = React.useMemo(
     () => ({
-      transform: `translateX(-${swipedOffset}px)`
+      transform: `translateX(${swipedOffset}px)`
     }),
     [swipedOffset]
   )
@@ -80,8 +91,8 @@ const SyntheticSlider = () => {
         onSwipeStart={onSwipeStart}
         onSwipeMove={onSwipeMove}
         onSwipeEnd={onSwipeEnd}>
-        <input type="button" onClick={() => setSwipedOffset(swipedOffset+10)} value="+"/>
-        <input type="button" onClick={() => setSwipedOffset(swipedOffset-10)} value="-"/>
+        <input type="button" onClick={buttonSwipe('+')} value="+"/>
+        <input type="button" onClick={buttonSwipe('-')} value="-"/>
         <div className={classes.syntheticSliderRow} style={swipeOffsetStyle}>
           {
             (
