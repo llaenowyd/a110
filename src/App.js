@@ -1,9 +1,12 @@
 import React from 'react'
+import cx from 'classnames'
 
 import {makeStyles} from '@material-ui/core'
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { useTheme } from '@material-ui/core/styles'
 import CssBaseline from '@material-ui/core/CssBaseline'
+
+import SyntheticSlider from './SyntheticSlider'
 
 const useStyles = makeStyles({
   app: {
@@ -15,14 +18,20 @@ const useStyles = makeStyles({
     fontSize: '4vw',
     fontWeight: 700,
     left: 0,
+    overflowX: 'hidden',
     position: 'absolute',
     right: 0,
     top: 0,
+  },
+  bottomRow: {
+    marginTop: 'auto',
+    userSelect: 'none',
   },
   fauxContent: {
     backgroundColor: 'lightcoral',
     display: 'flex',
     flexDirection: 'column',
+    height: '100%',
     marginLeft: 'auto',
     flex: 1,
     padding: '1vw',
@@ -56,7 +65,7 @@ const useWindowSize = () => {
 const Row = props => {
   const classes = useStyles()
 
-  return (<div className={classes.row}>{props.children}</div>)
+  return (<div className={cx(classes.row, props.className)}>{props.children}</div>)
 }
 
 const App = () => {
@@ -93,6 +102,9 @@ const App = () => {
           <Row>{`breakpoint: ${breakpointName} (${breakpointDescription})`}</Row>
           <Row>{`viewport width: ${viewportDimensions?.[0]}`}</Row>
           <Row>{`device pixel ratio: ${window.devicePixelRatio}`}</Row>
+          <Row className={classes.bottomRow}>
+            <SyntheticSlider />
+          </Row>
         </div>
       </div>
     </CssBaseline>
