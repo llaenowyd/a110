@@ -16,7 +16,7 @@ const useStyles = makeStyles({
     color: 'tan',
     height: '100%',
     justifyContent: 'center',
-    margin: '1em',
+    margin: '0 1em',
     padding: '1em',
     width: '10%',
   },
@@ -31,6 +31,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'row',
     overflowX: 'hidden',
+    paddingBottom: '1em',
     width: '100%',
   },
 })
@@ -47,21 +48,30 @@ const SyntheticSlider = () => {
   const classes = useStyles()
 
   const [diag, setDiag] = React.useState('')
+  const [swipedOffset, setSwipedOffset] = React.useState(0)
 
   const onSwipeStart = () => {
     console.log('onSwipeStart')
-    setDiag('onSwipeStart')
+    setDiag(`onSwipeStart ${swipedOffset}`)
   }
 
-  const onSwipeMove = () => {
+  const onSwipeMove = position => {
     console.log('onSwipeMove')
-    setDiag('onSwipeMove')
+    setDiag(`onSwipeMove ${swipedOffset} + ${position.x}`)
+    setSwipedOffset(position.x + swipedOffset)
   }
 
   const onSwipeEnd = () => {
     console.log('onSwipeEnd')
-    setDiag('onSwipeEnd')
+    setDiag(`onSwipeEnd ${swipedOffset}`)
   }
+
+  const swipeOffsetStyle = React.useMemo(
+    () => ({
+      transform: `translateX(-${swipedOffset}px)`
+    }),
+    [swipedOffset]
+  )
 
   return (
     <div className={classes.syntheticSlider}>
@@ -70,7 +80,9 @@ const SyntheticSlider = () => {
         onSwipeStart={onSwipeStart}
         onSwipeMove={onSwipeMove}
         onSwipeEnd={onSwipeEnd}>
-        <div className={classes.syntheticSliderRow}>
+        <input type="button" onClick={() => setSwipedOffset(swipedOffset+10)} value="+"/>
+        <input type="button" onClick={() => setSwipedOffset(swipedOffset-10)} value="-"/>
+        <div className={classes.syntheticSliderRow} style={swipeOffsetStyle}>
           {
             (
               () => {
